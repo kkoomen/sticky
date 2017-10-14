@@ -37,7 +37,6 @@
         },
       ],
     }, options);
-    console.log('settings', settings);
 
     var $element = this;
     var position = $element.css('position');
