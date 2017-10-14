@@ -1,5 +1,5 @@
 /*
- * sticky.jquery.js 1.0
+ * sticky.jquery.js 1.1.0
  * A custom jQuery extension fix for HTML5 sticky elements containing content
  * expanding the viewport height.
  *

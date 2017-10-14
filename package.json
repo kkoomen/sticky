@@ -1,0 +1,37 @@
+{
+  "name": "sticky.jquery.js",
+  "version": "1.1.0",
+  "description": "A custom jQuery extension fix for HTML5 sticky elements containing content expanding the viewport height.",
+  "main": "sticky.jquery.js",
+  "scripts": {
+    "build": "gulp build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kkoomen/sticky.git"
+  },
+  "keywords": [
+    "jquery",
+    "extension",
+    "custom",
+    "sticky",
+    "position",
+    "viewport",
+    "height",
+    "fit",
+    "responsive"
+  ],
+  "author": "Kim K",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kkoomen/sticky/issues"
+  },
+  "homepage": "https://github.com/kkoomen/sticky#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-header": "^1.8.9",
+    "gulp-load-plugins": "^1.5.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^3.0.0"
+  }
+}
