@@ -36,6 +36,41 @@ $('#myElement').sticky();
 $('#myElement').sticky({ defaultPosition: 'relative' });
 ```
 
+##### options.breakpoints
+
+- `Default: '[{ min: 0, max: 768}]'`
+
+- Allow to specify breakpoints where the script should be disabled. On default
+  we specify a mobile breakpoint which is in-between 0-768. If the window width
+  falls in-between those ranges, we disable our script.
+
+Example: disable the script on mobile (0-768) and in-between 1000-1400 pixels:
+
+```js
+$('#myElement').sticky({
+  defaultPosition: 'relative',
+  breakpoints: [
+    {
+      min: 0,
+      max: 768,
+    },
+    {
+      min: 1000,
+      max: 1400,
+    },
+  ],
+});
+```
+
+To allow the script the check on mobile as well just pass in an empty array:
+
+```js
+$('#myElement').sticky({
+  defaultPosition: 'relative',
+  breakpoints: [],
+});
+```
+
 # MIT License
 
 Copyright 2017 Kim Koomen

@@ -17,9 +17,6 @@
 (function($) {
 
   $.fn.sticky = function(options) {
-    /*
-     * Add settings which can be overwritten by the user.
-     */
     var settings = $.extend({
       /*
        * This should be the position if you wouldn't use "position: sticky;". If
@@ -27,7 +24,20 @@
        * Otherwise relative.
        */
       defaultPosition: 'relative',
+
+      /*
+       * Allow to specify breakpoints where the script should disabled. On
+       * default we specify a mobile breakpoint which is in-between 0-768. If
+       * the window width falls in-between those ranges, we disable our script.
+       */
+      breakpoints: [
+        {
+          min: 0,
+          max: 768,
+        },
+      ],
     }, options);
+    console.log('settings', settings);
 
     var $element = this;
     var position = $element.css('position');
@@ -88,24 +98,49 @@
     // ---------------
 
     /*
+     * Check wether the user has specified any breakpoints. If so, we do check
+     * if the current window width falls in-between the ranges specified by the
+     * user. We return a certain state indicating if the script has to be
+     * disabled or not.
+     */
+    function disabledWithinCurrentBreakPoint() {
+      var disabled = false;
+
+      for (var key in settings.breakpoints) {
+        var breakpoint = settings.breakpoints[key];
+        if (($(window).innerWidth() >= breakpoint.min) && ($(window).innerWidth() <= breakpoint.max)) {
+          disabled = true;
+          break;
+        }
+      }
+
+      return disabled;
+    }
+
+    /*
      * Position the sticky element at the top or bottom.
      */
     function setSticky(state) {
       var bottom = ($(window).innerHeight() - $element.outerHeight(true) - top);
-      $element.css({
-        position: 'sticky',
-        top: (state == 'disable') ? top : bottom,
-      });
+      if (disabledWithinCurrentBreakPoint()) {
+        $element.css({
+          position: settings.defaultPosition,
+          top: top,
+        });
+      } else {
+        $element.css({
+          position: 'sticky',
+          top: (state == 'disable') ? top : bottom,
+        });
+      }
     }
 
     /*
      * Callback function triggered when the user scrolls.
      */
     function onScroll() {
-      /*
-       * If the element does fit within the viewport, we don't have to do
-       * anything so just return false.
-       */
+      // If the element does fit within the viewport, we don't have to do
+      // anything so just return false.
       if (doesFit) return false;
 
       var scrollTop = $(window).scrollTop();
@@ -130,11 +165,9 @@
      * Callback function triggered when the user does resize the screen.
      */
     function onResize() {
-      /*
-       * While the user is resizing the screen, we update if the element does
-       * fit within the viewport. We disable our checks if it does fit and
-       * enable our checks if it doesn't.
-       */
+      // While the user is resizing the screen, we update if the element does
+      // fit within the viewport. We disable our checks if it does fit and
+      // enable our checks if it doesn't.
       doesFit = $element.outerHeight(true) < $(window).innerHeight();
       if (doesFit) {
         setSticky('disable');
