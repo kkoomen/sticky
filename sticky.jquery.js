@@ -6,7 +6,9 @@
  * Some sticky elements may contain content that doesn't fit within the viewport
  * height. This script alters the behavior of sticky elements by making them
  * sticky at the bottom, instead of the top, when needed. An element will be
- * sticky once the user reached the bottom of the element.
+ * sticky once the user reached the bottom of the element, but only when it
+ * expands the viewport height. Otherwise it will use the default
+ * "position: sticky;" behavior.
  *
  * Copyright 2017, Kim Koomen https://github.com/kkoomen
  * Released under the MIT license
