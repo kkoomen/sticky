@@ -124,7 +124,7 @@
       if (disabledWithinCurrentBreakPoint()) {
         $element.css({
           position: settings.defaultPosition,
-          top: top,
+          top: '', // empty string will remove our value from the inline style
         });
       } else {
         $element.css({
