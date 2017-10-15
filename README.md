@@ -62,7 +62,7 @@ $('#myElement').sticky({
 });
 ```
 
-To allow the script the check on mobile as well just pass in an empty array:
+To allow the script always just pass in an empty array:
 
 ```js
 $('#myElement').sticky({
