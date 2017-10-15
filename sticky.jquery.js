@@ -187,6 +187,14 @@
     $(window).on('scroll', onScroll);
     $(window).on('resize', onResize);
 
+    /*
+     * Do a 0-timeout and trigger a resize so that we re-calculate everything
+     * after the DOM content has been loaded.
+     */
+    setTimeout(function() {
+      $(window).trigger('resize');
+    }, 0);
+
     return this;
   };
 
