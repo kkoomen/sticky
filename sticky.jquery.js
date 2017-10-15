@@ -164,6 +164,12 @@
      * Callback function triggered when the user does resize the screen.
      */
     function onResize() {
+      /*
+       * Update the top variable always, because you may have a different
+       * "top"-property value specified on different devices.
+       */
+      top = parseInt($element.css('top'));
+
       // While the user is resizing the screen, we update if the element does
       // fit within the viewport. We disable our checks if it does fit and
       // enable our checks if it doesn't.
