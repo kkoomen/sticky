@@ -166,8 +166,11 @@
     function onResize() {
       /*
        * Update the top variable always, because you may have a different
-       * "top"-property value specified on different devices.
+       * "top"-property value specified on different devices. First we remove
+       * the old property set by us so that we can get its value, before getting
+       * its real value, defined by the application.
        */
+      $element.css('top', '');
       top = parseInt($element.css('top'));
 
       // While the user is resizing the screen, we update if the element does
