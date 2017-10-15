@@ -1,5 +1,5 @@
 /*
- * sticky.jquery.js 1.1.3
+ * sticky.jquery.js 1.1.4
  * A custom jQuery extension fix for HTML5 sticky elements containing content
  * expanding the viewport height.
  *
@@ -59,9 +59,10 @@
 
     /*
      * Check wether the element does fit within the screen, including margins
-     * and paddings.
+     * and paddings. We add the top * 2 because this doesn't create a flicker
+     * effect when it switches from the top to bottom position.
      */
-    var doesFit = ($element.outerHeight(true) + top) < $(window).innerHeight();
+    var doesFit = ($element.outerHeight(true) + top * 2) < $(window).innerHeight();
 
     /*
      * Above we checked if the element position is sticky. If it is, then set
@@ -176,7 +177,7 @@
       // While the user is resizing the screen, we update if the element does
       // fit within the viewport. We disable our checks if it does fit and
       // enable our checks if it doesn't.
-      doesFit = ($element.outerHeight(true) + top) < $(window).innerHeight();
+      doesFit = ($element.outerHeight(true) + top * 2) < $(window).innerHeight();
       if (doesFit) {
         setSticky('disable');
       } else {
