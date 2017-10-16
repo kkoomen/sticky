@@ -17,6 +17,10 @@
 (function($) {
 
   $.fn.sticky = function(options) {
+    if (this.length < 1) {
+      return false;
+    }
+
     var settings = $.extend({
       /*
        * This should be the position if you wouldn't use "position: sticky;". If
