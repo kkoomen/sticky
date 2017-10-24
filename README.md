@@ -1,13 +1,12 @@
-# Sticky
+# Sticky | The way it should be
 
 Some sticky elements may contain content that doesn't fit within the viewport
-height. This script alters the behavior of sticky elements by making them sticky
-at the bottom, instead of the top, when needed. An element will be sticky once
-the user reached the bottom of the element, but only when it expands the
-viewport height. Otherwise it will use the default `position: sticky;` behavior.
+height. This script implements a sticky sidebar the way it should by setting
+a maximum height, overflow and scrolls the sidebar along with the content.
 
 Why? Well if the content is expanding the viewport and it is sticky then a user
-never ever will see the bottom content within the element.
+never ever will see the bottom content within the element unless the user
+reaches the end of the page.
 
 ## Usage
 
@@ -24,50 +23,28 @@ $('#myElement').sticky();
 
 ## Options
 
-##### options.defaultPosition
+##### options.overflow
 
-- `Default: 'relative'`
+- `Default: 'hidden'`
 
-- This should be the position if you wouldn't use `position: sticky;`. If the
-  element was positioned `absolute` then you would specify `absolute`. Otherwise
-  `relative`.
+- On default it uses `overflow: hidden;` to remove the scrollbar, but if you
+  want to be able to scroll, just pass `auto`:
 
 ```js
-$('#myElement').sticky({ defaultPosition: 'relative' });
+$('#myElement').sticky({ overflow: 'auto' });
 ```
 
-##### options.breakpoints
+##### options.offsetBottom
 
-- `Default: '[{ min: 0, max: 768}]'`
+- `Default: (null|inherited from top)`
 
-- Allow to specify breakpoints where the script should be disabled. On default
-  we specify a mobile breakpoint which is in-between 0-768. If the window width
-  falls in-between those ranges, we disable our script.
-
-Example: disable the script on mobile (0-768) and in-between 1000-1400 pixels:
+- On default the bottom offset will be equal to the top specified via css. You
+  can overwrite this value when needed.
 
 ```js
 $('#myElement').sticky({
-  defaultPosition: 'relative',
-  breakpoints: [
-    {
-      min: 0,
-      max: 768,
-    },
-    {
-      min: 1000,
-      max: 1400,
-    },
-  ],
-});
-```
-
-To allow the script always just pass in an empty array:
-
-```js
-$('#myElement').sticky({
-  defaultPosition: 'relative',
-  breakpoints: [],
+  defaultPosition: 'hidden',
+  offsetBottom: 80
 });
 ```
 

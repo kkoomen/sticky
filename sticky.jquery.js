@@ -1,20 +1,29 @@
 /*
- * sticky.jquery.js 1.1.4
+ * sticky.jquery.js 2.1.4
  * A custom jQuery extension fix for HTML5 sticky elements containing content
  * expanding the viewport height.
  *
  * Some sticky elements may contain content that doesn't fit within the viewport
- * height. This script alters the behavior of sticky elements by making them
- * sticky at the bottom, instead of the top, when needed. An element will be
- * sticky once the user reached the bottom of the element, but only when it
- * expands the viewport height. Otherwise it will use the default
- * "position: sticky;" behavior.
+ * height. This script implements a sticky sidebar the way it should by setting
+ * a maximum height, overflow and scrolls the sidebar along with the content.
  *
  * Copyright 2017, Kim Koomen https://github.com/kkoomen
  * Released under the MIT license
  */
 
 (function($) {
+
+  if (!window.requestAnimationFrame) {
+    window.requestAnimationFrame = (function() {
+      return window.webkitRequestAnimationFrame ||
+      window.mozRequestAnimationFrame ||
+      window.oRequestAnimationFrame ||
+      window.msRequestAnimationFrame ||
+      function(callback) {
+        window.setTimeout( callback, 1000 / 60 );
+      };
+    })();
+  }
 
   $.fn.sticky = function(options) {
     if (this.length < 1) {
@@ -23,179 +32,71 @@
 
     var settings = $.extend({
       /*
-       * This should be the position if you wouldn't use "position: sticky;". If
-       * the element was positioned absolute then you would specify absolute.
-       * Otherwise relative.
+       * Allow to set the overflow of the element. Some people might want a
+       * scrollbar, some don't.
        */
-      defaultPosition: 'relative',
+      overflow: 'hidden',
 
       /*
-       * Allow to specify breakpoints where the script should disabled. On
-       * default we specify a mobile breakpoint which is in-between 0-768. If
-       * the window width falls in-between those ranges, we disable our script.
+       * Allow the user to specify an offset bottom. If this isn't specified
+       * then it will inherit the top-property specified on the element.
        */
-      breakpoints: [
-        {
-          min: 0,
-          max: 768,
-        },
-      ],
+      offsetBottom: null,
     }, options);
 
-    var $element = this;
-    var position = $element.css('position');
+    $(this).each(function(index, element) {
+      var $body = $('body');
+      var previousScrollPosition = $(window).scrollTop();
+      var top = parseInt($(element).css('top'));
+      var bottom = (typeof settings.offsetBottom === 'number') ? settings.offsetBottom : top;
 
-    /*
-     * If the element is sticky, set the default position. By doing this, we can
-     * get the top offset, which gives us the threshold when to toggle
-     * "position: sticky;".
-     */
-    if (position == 'sticky') {
-      $element.css('position', settings.defaultPosition);
-    }
-
-    /*
-     * Get the top-property of the sticky element. This will also be used to
-     * calculate the offset from the bottom. If the top equals 20px then we want
-     * that as well when placed at the bottom of the screen.
-     */
-    var top = parseInt($element.css('top'));
-
-    /*
-     * Check wether the element does fit within the screen, including margins
-     * and paddings. We add the top * 2 because this doesn't create a flicker
-     * effect when it switches from the top to bottom position.
-     */
-    var doesFit = ($element.outerHeight(true) + top * 2) < $(window).innerHeight();
-
-    /*
-     * Above we checked if the element position is sticky. If it is, then set
-     * the default position. Because it has it's "normal" position, we grab its
-     * top-offset relative to the document.
-     */
-    var initialPosition = $element.offset().top + ($(window).innerHeight() - $element.outerHeight(true));
-
-    /*
-     * Keep track of the element is made sticky from our side.
-     */
-    var sticky = false;
-
-    /*
-     * Keep track of the last scroll position. This is used to determine of the
-     * user is scrolling up or down.
-     */
-    var lastScrollPosition = 0;
-
-    /*
-     * Check initially (after we have all our values, assigned above) if the
-     * element does fit within the viewport. If it does, then disable the checks
-     * from our side. Otherwise we enable the checks for making it sticky.
-     */
-    if (doesFit) {
-      setSticky('disable')
-    } else {
-      setSticky()
-    }
-
-    // ---------------
-    // LOCAL FUNCTIONS
-    // ---------------
-
-    /*
-     * Check wether the user has specified any breakpoints. If so, we do check
-     * if the current window width falls in-between the ranges specified by the
-     * user. We return a certain state indicating if the script has to be
-     * disabled or not.
-     */
-    function disabledWithinCurrentBreakPoint() {
-      var disabled = false;
-
-      for (var key in settings.breakpoints) {
-        var breakpoint = settings.breakpoints[key];
-        if (($(window).innerWidth() >= breakpoint.min) && ($(window).innerWidth() <= breakpoint.max)) {
-          disabled = true;
-          break;
-        }
-      }
-
-      return disabled;
-    }
-
-    /*
-     * Position the sticky element at the top or bottom.
-     */
-    function setSticky(state) {
-      var bottom = ($(window).innerHeight() - $element.outerHeight(true) - top);
-      if (disabledWithinCurrentBreakPoint()) {
-        $element.css({
-          position: settings.defaultPosition,
-          top: '', // empty string will remove our value from the inline style
-        });
-      } else {
-        $element.css({
-          position: 'sticky',
-          top: (state == 'disable') ? top : bottom,
-        });
-      }
-    }
-
-    /*
-     * Callback function triggered when the user scrolls.
-     */
-    function onScroll() {
-      // If the element does fit within the viewport, we don't have to do
-      // anything so just return false.
-      if (doesFit) return false;
-
-      var scrollTop = $(window).scrollTop();
-      if (scrollTop > lastScrollPosition) {
-        // Scrolling down
-        if ((scrollTop + $(window).innerHeight()) >= initialPosition && !sticky) {
-          sticky = true;
-          setSticky();
-        }
-      } else {
-        // Scrolling up
-        if (scrollTop <= initialPosition) {
-          sticky = false;
-          setSticky('disable');
-        }
-      }
-
-      lastScrollPosition = scrollTop;
-    }
-
-    /*
-     * Callback function triggered when the user does resize the screen.
-     */
-    function onResize() {
-      /*
-       * Update the top variable always, because you may have a different
-       * "top"-property value specified on different devices. First we remove
-       * the old property set by us so that we can get its value, before getting
-       * its real value, defined by the application.
+      /* Toggle a static position to determine the actual position of the
+       * element. This has to due with the problem of refreshing the page where
+       * the offset top might be at your last position, which we don't want.
+       * Then the threshold will be way different.
        */
-      $element.css('top', '');
-      top = parseInt($element.css('top'));
+      $(element).css('position', 'static');
+      var threshold = $(element).offset().top;
+      $(element).css('position', '');
 
-      // While the user is resizing the screen, we update if the element does
-      // fit within the viewport. We disable our checks if it does fit and
-      // enable our checks if it doesn't.
-      doesFit = ($element.outerHeight(true) + top * 2) < $(window).innerHeight();
-      if (doesFit) {
-        setSticky('disable');
-      } else {
-        setSticky();
+      function onResize() {
+        if ($(element).css('position') == 'sticky') {
+          $(element).css({
+            maxHeight: $(window).outerHeight() - top - bottom,
+            overflow: settings.overflow,
+          });
+
+        } else {
+          $(element).css({
+            maxHeight: '',
+            overflow: '',
+          });
+        }
       }
-    }
 
-    $(window).on('scroll', onScroll);
-    $(window).on('resize', onResize);
+      function onScroll() {
+        var scrollTop = $(window).scrollTop();
+        if (scrollTop > previousScrollPosition && $(element).scrollTop() !== $(element).get(0).scrollHeight && scrollTop > threshold) {
+          // scrolling down
+          var diff = scrollTop - previousScrollPosition;
+          ($(element).css('position') == 'sticky') && $(element).scrollTop($(element).scrollTop() + diff);
 
-    /*
-     * Do a 0-timeout and trigger a resize so that we re-calculate everything
-     * after the DOM content has been loaded.
-     */
+        } else if ($(element).scrollTop() !== 0 && (scrollTop + $(window).innerHeight()) == ($(element).offset().top + $(element).outerHeight(true) + top)) {
+          var diff = previousScrollPosition - scrollTop;
+          ($(element).css('position') == 'sticky') && $(element).scrollTop($(element).scrollTop() - diff);
+        }
+
+        previousScrollPosition = scrollTop;
+        window.requestAnimationFrame(onScroll);
+      }
+
+      window.requestAnimationFrame(onScroll);
+      $(window).on('resize', onResize);
+    });
+
+
+    // Use the 0-timeout trick to trigger a resize after the content has been
+    // loaded.
     setTimeout(function() {
       $(window).trigger('resize');
     }, 0);

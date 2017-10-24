@@ -1,6 +1,6 @@
 {
   "name": "sticky.jquery.js",
-  "version": "1.1.4",
+  "version": "2.1.4",
   "description": "A custom jQuery extension fix for HTML5 sticky elements containing content expanding the viewport height.",
   "main": "sticky.jquery.js",
   "scripts": {
