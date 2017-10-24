@@ -2,7 +2,7 @@
 
 Some sticky elements may contain content that doesn't fit within the viewport
 height. This script implements a sticky sidebar the way it should by setting
-a maximum height, overflow and scrolls the sidebar along with the content.
+a maximum height, overflow and scrolls the element along with the content.
 
 Why? Well if the content is expanding the viewport and it is sticky then a user
 never ever will see the bottom content within the element unless the user
@@ -36,7 +36,7 @@ $('#myElement').sticky({ overflow: 'auto' });
 
 ##### options.offsetBottom
 
-- `Default: (null|inherited from top)`
+- `Default: null`
 
 - On default the bottom offset will be equal to the top specified via css. You
   can overwrite this value when needed.
