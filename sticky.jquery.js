@@ -60,7 +60,7 @@
       $(element).css('position', '');
 
       function onResize() {
-        if ($(element).css('position') == 'sticky') {
+        if ($(element).css('position').indexOf('sticky') >= 0) {
           $(element).css({
             maxHeight: $(window).outerHeight() - top - bottom,
             overflow: settings.overflow,
@@ -79,11 +79,11 @@
         if (scrollTop > previousScrollPosition && $(element).scrollTop() !== $(element).get(0).scrollHeight && scrollTop > threshold) {
           // scrolling down
           var diff = scrollTop - previousScrollPosition;
-          ($(element).css('position') == 'sticky') && $(element).scrollTop($(element).scrollTop() + diff);
+          ($(element).css('position').indexOf('sticky') >= 0) && $(element).scrollTop($(element).scrollTop() + diff);
 
-        } else if ($(element).scrollTop() !== 0 && (scrollTop + $(window).innerHeight()) == ($(element).offset().top + $(element).outerHeight(true) + top)) {
+        } else if ($(element).scrollTop() !== 0 && (scrollTop + $(window).innerHeight()) <= ($(element).offset().top + $(element).outerHeight(true) + top)) {
           var diff = previousScrollPosition - scrollTop;
-          ($(element).css('position') == 'sticky') && $(element).scrollTop($(element).scrollTop() - diff);
+          ($(element).css('position').indexOf('sticky') >= 0) && $(element).scrollTop($(element).scrollTop() - diff);
         }
 
         previousScrollPosition = scrollTop;
