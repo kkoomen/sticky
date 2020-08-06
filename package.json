@@ -32,6 +32,6 @@
     "gulp-header": "^1.8.9",
     "gulp-load-plugins": "^2.0.3",
     "gulp-rename": "^1.2.2",
-    "gulp-uglify": "^3.0.0"
+    "gulp-uglify": "^3.0.2"
   }
 }
