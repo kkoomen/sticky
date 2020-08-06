@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/kkoomen/sticky#readme",
   "devDependencies": {
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.2",
     "gulp-header": "^2.0.9",
     "gulp-load-plugins": "^2.0.3",
     "gulp-rename": "^2.0.0",
